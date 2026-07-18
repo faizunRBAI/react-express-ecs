@@ -1,14 +1,14 @@
-# ── Build stage ──────────────────────────────────────────────────────────────
+# ── Build stage ──────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 COPY src/ ./src/
 
-# ── Runtime stage ─────────────────────────────────────────────────────────────
+# ── Runtime stage ─────────────────────────────────────────────────────
 FROM node:20-alpine AS runtime
 
 # Security: non-root user
