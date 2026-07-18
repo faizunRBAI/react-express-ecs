@@ -17,4 +17,15 @@ export default [
     },
     ignores: ['coverage/**', 'node_modules/**'],
   },
+  {
+    files: ['src/__tests__/**/*.js', '**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
+    },
+  },
 ];
