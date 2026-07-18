@@ -130,7 +130,7 @@ jobs:
     - name: Terraform init
       run: |
         cd infra
-        terraform init \
+        terraform init -reconfigure \
           -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
           -backend-config="key=${{ secrets.PROJECT_NAME }}/terraform.tfstate" \
           -backend-config="region=us-east-1"
