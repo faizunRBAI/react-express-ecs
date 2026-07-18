@@ -1,0 +1,29 @@
+# udap:meta cloud=aws region=us-east-1 target=ecs
+
+user: Internet User { shape: rectangle; udap-type: generic.user }
+cdn: CloudFront Distribution { shape: rectangle; udap-type: aws.cloudfront }
+s3: S3 Static Bucket { shape: rectangle; udap-type: aws.s3 }
+ecr: ECR Repository { shape: rectangle; udap-type: aws.ecr }
+sm: Secrets Manager { shape: rectangle; udap-type: aws.secretsmanager }
+cw: CloudWatch Logs { shape: rectangle; udap-type: aws.cloudwatch }
+vpc: VPC 10.1.0.0/16 {
+  alb: Application Load Balancer { shape: rectangle; udap-type: aws.alb }
+  pub_a: Public Subnet us-east-1a { shape: rectangle; udap-type: aws.subnet }
+  pub_b: Public Subnet us-east-1b { shape: rectangle; udap-type: aws.subnet }
+  ecs: ECS Fargate Cluster { shape: rectangle; udap-type: aws.ecs }
+  task: Express API Task (min1 max3) { shape: rectangle; udap-type: aws.ecs }
+  rds: RDS PostgreSQL db.t3.micro { shape: rectangle; udap-type: aws.rds }
+}
+
+user -> cdn: HTTPS
+user -> vpc.alb: HTTPS API
+cdn -> s3: Origin fetch
+vpc.alb -> vpc.pub_a: route
+vpc.alb -> vpc.pub_b: route
+vpc.pub_a -> vpc.task: forward
+vpc.pub_b -> vpc.task: forward
+vpc.ecs -> vpc.task: runs
+ecr -> vpc.task: pull image
+vpc.task -> vpc.rds: port 5432
+vpc.task -> sm: fetch credentials
+vpc.task -> cw: logs
